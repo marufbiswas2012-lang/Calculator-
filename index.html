@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculator</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins,sans-serif}
+body{background:#f4f6fb;display:flex;justify-content:center}
+
+.app{width:100%;max-width:380px;height:100vh;display:flex;flex-direction:column}
+
+/* Fake Ad (AdMob style) */
+.ad{
+  height:70px;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-bottom:1px solid #eee;
+}
+.fake-ad{
+  width:95%;
+  height:55px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  padding:8px;
+  gap:10px;
+}
+.ad-label{
+  font-size:10px;
+  color:#999;
+  border:1px solid #ccc;
+  padding:2px 5px;
+  border-radius:4px;
+}
+.ad-title{font-size:13px;font-weight:600}
+.ad-desc{font-size:11px;color:#777}
+
+/* Display */
+.display{
+  flex:1;
+  background:#fff;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  text-align:right;
+}
+#exp{font-size:38px;word-break:break-all}
+#res{font-size:22px;color:#888;margin-top:6px}
+
+/* Buttons */
+.buttons{
+  background:#fff;
+  padding:12px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+}
+
+button{
+  height:60px;
+  border:none;
+  border-radius:50%;
+  font-size:18px;
+  background:#eef1f7;
+  position:relative;
+  overflow:hidden;
+  transition:.15s;
+}
+button:active{transform:scale(.9)}
+.operator{color:#4c6ef5}
+.equal{background:#4c6ef5;color:#fff;border-radius:30px;grid-row:span 2}
+.clear{color:#4c6ef5}
+
+/* Ripple */
+.ripple{
+  position:absolute;
+  border-radius:50%;
+  background:rgba(0,0,0,.2);
+  transform:scale(0);
+  animation:r .5s linear;
+}
+@keyframes r{to{transform:scale(4);opacity:0}}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- Fake Ad -->
+  <div class="ad">
+    <div class="fake-ad">
+      <div class="ad-label">Ad</div>
+      <div>
+        <div class="ad-title">Install Game Booster</div>
+        <div class="ad-desc">Boost performance instantly 🚀</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Display -->
+  <div class="display">
+    <div id="exp">0</div>
+    <div id="res"></div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="buttons">
+    <button class="clear" onclick="clr()">AC</button>
+    <button onclick="del()">⌫</button>
+    <button onclick="add('%')">%</button>
+    <button class="operator" onclick="add('/')">÷</button>
+
+    <button onclick="add('7')">7</button>
+    <button onclick="add('8')">8</button>
+    <button onclick="add('9')">9</button>
+    <button class="operator" onclick="add('*')">×</button>
+
+    <button onclick="add('4')">4</button>
+    <button onclick="add('5')">5</button>
+    <button onclick="add('6')">6</button>
+    <button class="operator" onclick="add('-')">−</button>
+
+    <button onclick="add('1')">1</button>
+    <button onclick="add('2')">2</button>
+    <button onclick="add('3')">3</button>
+    <button class="operator" onclick="add('+')">+</button>
+
+    <button onclick="add('0')">0</button>
+    <button onclick="add('00')">00</button>
+    <button onclick="add('.')">.</button>
+    <button class="equal" onclick="eq()">=</button>
+  </div>
+
+</div>
+
+<script>
+let exp=document.getElementById('exp')
+let res=document.getElementById('res')
+
+function format(x){
+  return x.replace(/×/g,'*').replace(/÷/g,'/')
+}
+
+function calc(x){
+  try{return Function('return '+x)()}catch{return ''}
+}
+
+function add(v){
+  if(exp.textContent==='0' && v!=='.') exp.textContent=''
+  exp.textContent+=v
+  live()
+}
+
+function clr(){
+  exp.textContent='0'
+  res.textContent=''
+}
+
+function del(){
+  exp.textContent=exp.textContent.slice(0,-1)||'0'
+  live()
+}
+
+function live(){
+  let r=calc(format(exp.textContent))
+  res.textContent = r!=='' ? r : ''
+}
+
+function eq(){
+  let r=calc(format(exp.textContent))
+  if(r!==''){
+    exp.textContent=r
+    res.textContent=''
+  }else{
+    res.textContent='Error'
+  }
+}
+
+/* Ripple */
+document.querySelectorAll('button').forEach(b=>{
+  b.addEventListener('click',e=>{
+    let c=document.createElement('span')
+    let d=Math.max(b.clientWidth,b.clientHeight)
+    c.style.width=c.style.height=d+'px'
+    c.style.left=e.offsetX-d/2+'px'
+    c.style.top=e.offsetY-d/2+'px'
+    c.classList.add('ripple')
+    b.appendChild(c)
+    setTimeout(()=>c.remove(),500)
+  })
+})
+</script>
+
+</body>
+</html>
